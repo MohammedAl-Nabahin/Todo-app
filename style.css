@@ -1,0 +1,157 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: rgb(243, 252, 249);
+  font-family: monospace;
+  position: relative;
+}
+
+/* Main style */
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 32px;
+  width: 400px;
+  margin: 40px auto;
+  background-color: white;
+  border-radius: 15px;
+  padding: 40px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Task box style */
+section {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+}
+
+section > .add-task {
+  display: flex;
+  flex-direction: row;
+  gap: 7px;
+  width: 100%;
+}
+
+input {
+  height: 40px;
+  border-radius: 5px;
+  padding-left: 5px;
+  font-size: medium;
+  word-break: break-word;
+  width: 80%;
+}
+
+button {
+  cursor: pointer;
+}
+
+#add-button {
+  padding: 6px;
+  background-color: greenyellow;
+  font-weight: bold;
+  border-radius: 5px;
+  width: 35%;
+}
+
+#add-button:hover {
+  background-color: #b2f59e;
+  color: #222;
+}
+
+/* Tasks list and list item style */
+section > ul.tasks-list {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-top: 15px;
+}
+
+#placeholder-task {
+  background: transparent;
+  border: none;
+  font-size: x-large;
+  color: gray;
+  margin-left: 50%;
+}
+
+ul > li {
+  padding: 7px;
+  border-radius: 5px;
+  background-color: rgb(242, 242, 242);
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  border: 1px solid rgb(204, 203, 203);
+  font-size: medium;
+}
+
+li > span {
+  display: flex;
+  align-items: center;
+  flex-direction: row-reverse;
+  justify-content: center;
+  gap: 5px;
+  word-break: break-word;
+  max-width: 90%;
+  font-size: large;
+}
+
+.complete-task {
+  height: 20px;
+  width: 30px;
+  cursor: pointer;
+  accent-color: green;
+  flex-shrink: 0;
+}
+
+.delete-task {
+  display: flex;
+  padding: 5px;
+  background-color: red;
+  font-weight: 700;
+  border-radius: 5px;
+  color: white;
+  align-self: center;
+  margin-left: 5px;
+}
+
+.delete-task:hover {
+  background-color: #ff4d4d;
+}
+
+li.completed {
+  border: 3px solid green;
+}
+
+li.completed span {
+  color: #888;
+  text-decoration: line-through;
+}
+
+.toast {
+  display: none;
+  padding: 15px;
+  border: 1px solid green;
+  background-color: rgb(235, 233, 231);
+  font-size: larger;
+  border-radius: 5px;
+  position: absolute;
+  top: 0;
+  left: 10px;
+  width: 340px;
+}
