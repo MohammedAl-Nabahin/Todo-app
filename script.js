@@ -1,5 +1,5 @@
 //Dom Elements
-const addButton = document.getElementById("add-button");
+const form = document.querySelector("form");
 const taskInput = document.querySelector("input");
 const tasksList = document.querySelector(".tasks-list");
 const toast = document.querySelector(".toast");
@@ -8,14 +8,12 @@ const placeholderTask = document.getElementById("placeholder-task");
 taskInput.focus();
 
 //Events
-addButton.addEventListener("click", handleAddTask);
+form.addEventListener("submit", handleAddTask);
 taskInput.addEventListener("keypress", (event) => {
   if (event.key === "Enter") handleAddTask();
 });
 
-// Event delegation, Bubbling
 tasksList.addEventListener("click", (e) => {
-  // Gets the parent of the clicked element
   const li = e.target.closest("li");
   if (!li) return;
 
@@ -29,35 +27,18 @@ tasksList.addEventListener("click", (e) => {
   }
 });
 
-// Add task and dom manipulation functionality
-function handleAddTask() {
-  const taskData = taskInput.value.trim();
-  if (!taskData) return null;
+function handleAddTask(e) {
+  e.preventDefault();
 
-  if (placeholderTask) placeholderTask.remove();
+  const taskData = getTaskInput();
+  if (!taskData) return;
+  removePlaceholderTask();
 
-  const newTask = document.createElement("li");
-
-  const checkbox = document.createElement("input");
-  checkbox.type = "checkbox";
-  checkbox.classList.add("complete-task");
-
-  // span element to wrap task data and checkbox together
-  const span = document.createElement("span");
-  span.textContent = taskData;
-
-  const deleteButton = document.createElement("button");
-  deleteButton.textContent = "Delete";
-  deleteButton.classList.add("delete-task");
-
-  span.append(checkbox);
-  newTask.append(span, deleteButton);
+  const newTask = createTaskElement(taskData);
   tasksList.append(newTask);
 
-  showToast("Task Added successfully");
-
-  taskInput.value = "";
-  taskInput.focus();
+  showToast("Task added successfully");
+  resetTaskInput();
 }
 
 function showToast(message) {
@@ -66,4 +47,49 @@ function showToast(message) {
   setTimeout(() => {
     toast.style.display = "none";
   }, 2000);
+}
+
+function getTaskInput() {
+  return taskInput.value.trim();
+}
+
+function removePlaceholderTask() {
+  if (placeholderTask) placeholderTask.remove();
+}
+
+function createTaskElement(taskText) {
+  const li = document.createElement("li");
+
+  const checkbox = createCheckbox();
+  const textSpan = addTaskText(taskText, checkbox);
+  const deleteButton = createDeleteButton();
+
+  li.append(textSpan, deleteButton);
+  return li;
+}
+
+function createCheckbox() {
+  const checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+  checkbox.classList.add("complete-task");
+  return checkbox;
+}
+
+function addTaskText(text, checkbox) {
+  const span = document.createElement("span");
+  span.textContent = text;
+  span.append(checkbox);
+  return span;
+}
+
+function createDeleteButton() {
+  const button = document.createElement("button");
+  button.textContent = "Delete";
+  button.classList.add("delete-task");
+  return button;
+}
+
+function resetTaskInput() {
+  taskInput.value = "";
+  taskInput.focus();
 }
