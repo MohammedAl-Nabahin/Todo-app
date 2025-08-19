@@ -5,12 +5,14 @@ const tasksList = document.querySelector(".tasks-list");
 const toast = document.querySelector(".toast");
 const placeholderTask = document.getElementById("placeholder-task");
 
+const TASKS_LIST_KEY = "todos";
+
 taskInput.focus();
 
 //Events
 form.addEventListener("submit", handleAddTask);
 taskInput.addEventListener("keypress", (event) => {
-  if (event.key === "Enter") handleAddTask();
+  if (event.key === "Enter") handleAddTask(event);
 });
 
 tasksList.addEventListener("click", (e) => {
@@ -19,11 +21,16 @@ tasksList.addEventListener("click", (e) => {
 
   if (e.target.classList.contains("complete-task")) {
     li.classList.toggle("completed");
+    completeTasksInLocalStorage(
+      li.dataset.id,
+      li.classList.contains("completed")
+    );
   }
 
   if (e.target.classList.contains("delete-task")) {
     li.remove();
-    showToast("Task Deleted");
+    deleteFromLocalStorage(li.dataset.id);
+    showToast("Task Deleted successfully");
   }
 });
 
@@ -34,19 +41,14 @@ function handleAddTask(e) {
   if (!taskData) return;
   removePlaceholderTask();
 
-  const newTask = createTaskElement(taskData);
+  const id = Math.random().toFixed(5) + taskData.slice(3, 8);
+  const newTask = createTaskElement(id, taskData);
   tasksList.append(newTask);
+
+  saveToLocalStorage({ id, text: taskData });
 
   showToast("Task added successfully");
   resetTaskInput();
-}
-
-function showToast(message) {
-  toast.textContent = message;
-  toast.style.display = "block";
-  setTimeout(() => {
-    toast.style.display = "none";
-  }, 2000);
 }
 
 function getTaskInput() {
@@ -57,10 +59,13 @@ function removePlaceholderTask() {
   if (placeholderTask) placeholderTask.remove();
 }
 
-function createTaskElement(taskText) {
+function createTaskElement(id, taskText, completed = false) {
   const li = document.createElement("li");
+  li.dataset.id = id;
+  if (completed) li.classList.add("completed");
 
   const checkbox = createCheckbox();
+  checkbox.checked = completed;
   const textSpan = addTaskText(taskText, checkbox);
   const deleteButton = createDeleteButton();
 
@@ -71,6 +76,7 @@ function createTaskElement(taskText) {
 function createCheckbox() {
   const checkbox = document.createElement("input");
   checkbox.type = "checkbox";
+  checkbox.name = "task-status";
   checkbox.classList.add("complete-task");
   return checkbox;
 }
@@ -92,4 +98,35 @@ function createDeleteButton() {
 function resetTaskInput() {
   taskInput.value = "";
   taskInput.focus();
+}
+
+//localStorage
+function saveToLocalStorage({ id, text, completed = false }) {
+  const storedTasks = localStorage.getItem(TASKS_LIST_KEY);
+  const tasks = JSON.parse(storedTasks) || [];
+  tasks.push({ id, text, completed });
+  localStorage.setItem(TASKS_LIST_KEY, JSON.stringify(tasks));
+}
+
+function deleteFromLocalStorage(id) {
+  const storedTasks = localStorage.getItem(TASKS_LIST_KEY);
+  const tasks = JSON.parse(storedTasks) || [];
+  const filteredTasks = tasks.filter((task) => task.id !== id);
+  localStorage.setItem(TASKS_LIST_KEY, JSON.stringify(filteredTasks));
+}
+
+function completeTasksInLocalStorage(id, completed) {
+  const storedTasks = localStorage.getItem(TASKS_LIST_KEY);
+  const tasks = JSON.parse(storedTasks) || [];
+  const completedTask = tasks.find((task) => task.id === id);
+  if (completedTask) completedTask.completed = completed;
+  localStorage.setItem(TASKS_LIST_KEY, JSON.stringify(tasks));
+}
+
+function showToast(message) {
+  toast.textContent = message;
+  toast.style.display = "block";
+  setTimeout(() => {
+    toast.style.display = "none";
+  }, 2000);
 }
