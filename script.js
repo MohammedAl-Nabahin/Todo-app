@@ -10,6 +10,8 @@ const TASKS_LIST_KEY = "todos";
 taskInput.focus();
 
 //Events
+document.addEventListener("DOMContentLoaded", loadTasksFromLocalStorage);
+
 form.addEventListener("submit", handleAddTask);
 taskInput.addEventListener("keypress", (event) => {
   if (event.key === "Enter") handleAddTask(event);
@@ -121,6 +123,16 @@ function completeTasksInLocalStorage(id, completed) {
   const completedTask = tasks.find((task) => task.id === id);
   if (completedTask) completedTask.completed = completed;
   localStorage.setItem(TASKS_LIST_KEY, JSON.stringify(tasks));
+}
+
+function loadTasksFromLocalStorage() {
+  const tasks = JSON.parse(localStorage.getItem(TASKS_LIST_KEY)) || [];
+  if (tasks.length === 0) return;
+  removePlaceholderTask();
+  const elements = tasks.map((item) =>
+    createTaskElement(item.id, item.text, item.completed)
+  );
+  tasksList.append(...elements);
 }
 
 function showToast(message) {
