@@ -33,6 +33,7 @@ tasksList.addEventListener("click", (e) => {
     li.remove();
     deleteFromLocalStorage(li.dataset.id);
     showToast("Task Deleted successfully");
+    checkAndShowPlaceholder();
   }
 });
 
@@ -102,31 +103,45 @@ function resetTaskInput() {
   taskInput.focus();
 }
 
+function checkAndShowPlaceholder() {
+  if (tasksList.children.length === 0) {
+    const placeholder = document.createElement("li");
+    placeholder.id = "placeholder-task";
+    placeholder.textContent = "No Tasks Yet!";
+    tasksList.append(placeholder);
+  }
+}
+
 //localStorage
-function saveToLocalStorage({ id, text, completed = false }) {
-  const storedTasks = localStorage.getItem(TASKS_LIST_KEY);
-  const tasks = JSON.parse(storedTasks) || [];
-  tasks.push({ id, text, completed });
+function getTasksFromLocalStorage() {
+  return JSON.parse(localStorage.getItem(TASKS_LIST_KEY)) || [];
+}
+
+function setTasksToLocalStorage(tasks) {
   localStorage.setItem(TASKS_LIST_KEY, JSON.stringify(tasks));
+}
+
+function saveToLocalStorage({ id, text, completed = false }) {
+  const tasks = getTasksFromLocalStorage();
+  tasks.push({ id, text, completed });
+  setTasksToLocalStorage(tasks);
 }
 
 function deleteFromLocalStorage(id) {
-  const storedTasks = localStorage.getItem(TASKS_LIST_KEY);
-  const tasks = JSON.parse(storedTasks) || [];
+  const tasks = getTasksFromLocalStorage();
   const filteredTasks = tasks.filter((task) => task.id !== id);
-  localStorage.setItem(TASKS_LIST_KEY, JSON.stringify(filteredTasks));
+  setTasksToLocalStorage(filteredTasks);
 }
 
 function completeTasksInLocalStorage(id, completed) {
-  const storedTasks = localStorage.getItem(TASKS_LIST_KEY);
-  const tasks = JSON.parse(storedTasks) || [];
+  const tasks = getTasksFromLocalStorage();
   const completedTask = tasks.find((task) => task.id === id);
   if (completedTask) completedTask.completed = completed;
-  localStorage.setItem(TASKS_LIST_KEY, JSON.stringify(tasks));
+  setTasksToLocalStorage(tasks);
 }
 
 function loadTasksFromLocalStorage() {
-  const tasks = JSON.parse(localStorage.getItem(TASKS_LIST_KEY)) || [];
+  const tasks = getTasksFromLocalStorage();
   if (tasks.length === 0) return;
   removePlaceholderTask();
   const elements = tasks.map((item) =>
